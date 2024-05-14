@@ -237,9 +237,3 @@ class FAGRAGNet(nn.Module):
 		x = self.linend2(x)
 
 		return x
-
-
-if __name__ == "__main__":
-	data = torch.randn((16 * 62, 1, 5, 265))
-	model = FAGRAGNet()
-	print(model(data).shape)
