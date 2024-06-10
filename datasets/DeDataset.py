@@ -66,7 +66,7 @@ def get_official_data(path, save_path, num_subjects=15):
 				mov_data.append(mov_datai)
 
 			mov_data = np.vstack(mov_data)
-			mov_data = normalize(mov_data)  # 对每个通道的数据进行归一化
+			mov_data = normalize(mov_data)
 			sub_mov.append(mov_data)
 			sub_label.append(np.hstack([label, label, label]).squeeze())
 
@@ -80,11 +80,10 @@ def get_official_data(path, save_path, num_subjects=15):
 
 def MakeDataset(sub_id, path, save_path, num_subjects=15, one_hot=False):
 
-	data, labels = get_official_data(path, save_path, num_subjects)  # (15, 45, 62, 5, 265) (15, 45)
+	data, labels = get_official_data(path, save_path, num_subjects)
 
 	print('Label Range: ', labels.min(), labels.max())
 	subjects, trials, channels, bands, features = data.shape
-	# 被试留一实验：当前循环哪个被试，就把哪个被试取出来当做测试集
 	index_list = list(range(num_subjects))
 	del index_list[sub_id]
 	test_index = sub_id
@@ -100,18 +99,18 @@ def MakeDataset(sub_id, path, save_path, num_subjects=15, one_hot=False):
 	testY = labels[test_index, :].reshape(-1)
 	# get labels
 	if one_hot:
-		_, Y = np.unique(Y, return_inverse=True)  # return_inverse的参数可以用于重构原来的数组
-		Y = to_categorical(Y, 3)  # 由于原来的标签是-1,0,1，因为使用了np.unique所以将其转换为了0,1,2
+		_, Y = np.unique(Y, return_inverse=True)
+		Y = to_categorical(Y, 3)
 		_, testY = np.unique(testY, return_inverse=True)
 		testY = to_categorical(testY, 3)
 
 	print(X.shape, testX.shape, Y.shape, testY.shape)
-	X = torch.Tensor(X.astype(float))  # transform to torch tensor
+	X = torch.Tensor(X.astype(float))
 	testX = torch.Tensor(testX.astype(float))
-	Y = torch.Tensor(Y.astype(float))  # transform to torch tensor
+	Y = torch.Tensor(Y.astype(float))
 	testY = torch.Tensor(testY.astype(float))
 
-	train_dataset = TensorDataset(X, Y.long(), )  # create your datset
+	train_dataset = TensorDataset(X, Y.long(), )
 	test_dataset = TensorDataset(testX, testY.long())
 
 	return train_dataset, test_dataset
